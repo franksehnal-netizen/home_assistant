@@ -1,4 +1,4 @@
-default_config:
+﻿default_config:
 
 frontend:
   themes: !include_dir_merge_named themes
@@ -178,8 +178,7 @@ rest_command:
         "embeds": [
           {
             "author": {
-              "namcp /config/.storage/lovelace.my_dash.bak /config/.storage/lovelace.my_dash && python3 -c "import json; json.load(open('/config/.storage/lovelace.my_dash'))" && echo VALID
-              e": "Acoustic Empire • Print Lab",
+              "name": "Acoustic Empire • Print Lab",
               "icon_url": "https://raw.githubusercontent.com/franksehnal-netizen/acoustic-empire/main/profile%20logo%20Acoustic%20Empire.png"
             },
             "title": "{{ title }}",

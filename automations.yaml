@@ -1,4 +1,4 @@
-- id: '1759085159743'
+﻿- id: '1759085159743'
   alias: Notify when Phone Battery is Low
   description: Sends a notification to your mobile phone when its battery level falls
     below 36%.
@@ -691,11 +691,6 @@
     entity_id: 0aafc24f23e3df48f27527448f4e2e4e
     domain: switch
   mode: single
-- *id001
-- *id001
-- *id001
-- *id001
-- *id001
 - id: '1762973628996'
   alias: Notify when Prusa MK4 finishes printing (AI summary + snapshot + quiet nights)
   description: AI shrnutí tisku (~200 slov), notifikace s tlačítkem pro vypnutí zásuvky,
