@@ -1,0 +1,1264 @@
+- id: '1759085159743'
+  alias: Notify when Phone Battery is Low
+  description: Sends a notification to your mobile phone when its battery level falls
+    below 36%.
+  triggers:
+  - type: battery_level
+    device_id: e9c829a87feacde4951010e10c91075a
+    entity_id: 3573dc52be5c3f95ca315885fff5432c
+    domain: sensor
+    trigger: device
+    below: 20
+    for:
+      hours: 0
+      minutes: 0
+      s: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_samsung_galaxy_a54
+    metadata: {}
+    data:
+      title: battery level just dropped below 30%! Remember to charge your phone!
+      message: 'Low Battery Alert! '
+  - action: light.turn_on
+    metadata: {}
+    target:
+      entity_id: light.home_assistant_voice_0a36ed_led_ring
+    data:
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      transition: 2
+  mode: single
+- &id001
+  id: pohybove_svetlo_chodba_casova_intenzita
+  alias: Chodba – Světlo dle času a intenzity (IKEA fix, smooth + logs)
+  description: 3s rampa ON, 5s fade-out OFF. Den 100 %, noc 35 %. CT změna znovu pošle
+    jas. Logbook pro ladění.
+  triggers:
+  - entity_id: binary_sensor.motion_sensor_chodba
+    from: 'off'
+    to: 'on'
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: time
+        after: 07:00:00
+        before: '22:00:00'
+      sequence:
+      - data:
+          name: Chodba
+          message: DEN start → cílový jas 100 % (rampa 3s)
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          brightness: 254
+          transition: 3
+        action: light.turn_on
+      - delay: '00:00:00.6'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          color_temp_kelvin: 2857
+          brightness: 254
+        action: light.turn_on
+      - data:
+          name: Chodba
+          message: DEN → CT=2857K potvrzeno při 100 %
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+      - wait_for_trigger:
+        - entity_id: binary_sensor.motion_sensor_chodba
+          to: 'off'
+          for: 00:00:20
+          trigger: state
+        timeout: 00:10:00
+        continue_on_timeout: true
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          brightness: 1
+          transition: 5
+        action: light.turn_on
+      - delay: '00:00:05.2'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: light.turn_off
+      - delay: '00:00:00.7'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: light.turn_off
+      - data:
+          name: Chodba
+          message: DEN konec → zhasnuto (fade 5s)
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: time
+          after: '22:00:00'
+        - condition: time
+          before: 07:00:00
+      sequence:
+      - data:
+          name: Chodba
+          message: NOC start → cílový jas 35 % (rampa 3s)
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          brightness: 89
+          transition: 3
+        action: light.turn_on
+      - delay: '00:00:00.6'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          color_temp_kelvin: 2000
+          brightness: 89
+        action: light.turn_on
+      - data:
+          name: Chodba
+          message: NOC → CT=2000K potvrzeno při 35 %
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+      - wait_for_trigger:
+        - entity_id: binary_sensor.motion_sensor_chodba
+          to: 'off'
+          for: 00:00:10
+          trigger: state
+        timeout: 00:10:00
+        continue_on_timeout: true
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        data:
+          brightness: 1
+          transition: 5
+        action: light.turn_on
+      - delay: '00:00:05.2'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: light.turn_off
+      - delay: '00:00:00.7'
+      - target:
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: light.turn_off
+      - data:
+          name: Chodba
+          message: NOC konec → zhasnuto (fade 5s)
+          entity_id: light.bulb_e27_ws_globe_1055lm_chodba
+        action: logbook.log
+  mode: restart
+  variables:
+    DAY_LEVEL: 254
+    NIGHT_LEVEL: 89
+- id: '1759594437459'
+  alias: Turn off Lights with Remote Button (GUESTS)
+  description: Night routine
+  triggers:
+  - device_id: c2ca6a1c30334c0897707094e47d39d3
+    domain: zha
+    type: remote_button_short_press
+    subtype: button_1
+    trigger: device
+  conditions: []
+  actions:
+  - if:
+    - condition: device
+      type: is_on
+      device_id: 825b4237a6bb5b5ddb7bf08a3cbaa279
+      entity_id: 63b8bdb8210ebbd531ed347f0c30ea11
+      domain: light
+    then:
+    - action: light.turn_off
+      metadata: {}
+      data:
+        transition: 5
+      target:
+        area_id:
+        - kuchyne
+        - obyvak
+    - delay: '00:00:01.0'
+    - action: light.turn_off
+      target:
+        entity_id: light.bulb_e27_cws_globe_806lm_hruska
+    - type: turn_off
+      device_id: e53b18d003ce543277e93b4c229e8e43
+      entity_id: d6e45af4e7951f50331b5abab88e5c0d
+      domain: switch
+    - type: turn_off
+      device_id: e4d0ded346e623d910c07c934857c5e8
+      entity_id: fafc27fe32212dec281d1339bd0fc644
+      domain: switch
+    - if:
+      - condition: state
+        entity_id: sensor.prusa_mk4
+        state: printing
+      then: []
+      else:
+      - type: turn_off
+        device_id: ab2ce9bc92f48e067bb98f85d58a7feb
+        entity_id: 0aafc24f23e3df48f27527448f4e2e4e
+        domain: switch
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.2
+      target:
+        device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+    - action: media_player.play_media
+      metadata: {}
+      data:
+        media:
+          media_content_id: media-source://media_source/local/music/Intro GEN4_final
+            [04-May-25].wav
+          media_content_type: audio/x-wav
+          metadata:
+            title: Intro GEN4_final [04-May-25].wav
+            thumbnail:
+            media_class: music
+            children_media_class:
+            navigateIds:
+            - {}
+            - media_content_type: app
+              media_content_id: media-source://media_source
+            - media_content_type: ''
+              media_content_id: media-source://media_source/local/music
+            browse_entity_id: media_player.living_room_speaker
+      target:
+        device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+    - action: media_player.media_pause
+      metadata: {}
+      data: {}
+    - action: switch.turn_off
+      target:
+        entity_id: switch.ikea_of_sweden_inspelning_smart_plug
+    else:
+    - action: light.turn_on
+      target:
+        entity_id:
+        - light.bulb_e27_cws_globe_806lm_kitchen
+        - light.bulb_e27_cws_globe_806lm_sporak
+        - light.bulb_e27_cws_globe_806lm_hruska
+      data:
+        rgb_color:
+        - 255
+        - 255
+        - 255
+        transition: 0.5
+    - delay: '00:00:00.7'
+    - action: light.turn_on
+      metadata: {}
+      data:
+        transition: 2
+        brightness: 178
+      target:
+        entity_id:
+        - light.bulb_e27_cws_globe_806lm_kitchen
+        - light.bulb_e27_cws_globe_806lm_sporak
+        - light.bulb_e27_cws_globe_806lm_hruska
+  mode: single
+- id: '1759653938353'
+  alias: Turn off Lights and Stop Media on Departure
+  description: Turns off lights in the kitchen and living room and stops media playback
+    when the departure NFC tag is scanned.
+  triggers:
+  - trigger: tag
+    tag_id: 7a25784b-b814-418b-9df0-dc2f53b586a8
+    id: NFC_odchod
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data:
+      transition: 2
+    target:
+      device_id:
+      - 825b4237a6bb5b5ddb7bf08a3cbaa279
+      - b7583dab5fd639147c8419ab04878db4
+      - 0da60e5d004467ede3e483e64210684a
+      - d33997dcb9e74f417046016dfe698b16
+      entity_id:
+      - light.led_strip_bedroom
+      - light.bulb_red_bedroom
+  - type: turn_off
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
+  - type: turn_off
+    device_id: e4d0ded346e623d910c07c934857c5e8
+    entity_id: fafc27fe32212dec281d1339bd0fc644
+    domain: switch
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - 365f76f89eb2fdfaa553fc4a8a066d34
+      - 0de8f84894590a4024e5b0b0199cc7b9
+  mode: single
+- id: '1759660818887'
+  alias: Notify when Prusa MK4 finishes printing
+  description: Sends a notification to your phone and flashes green lights when the
+    Prusa MK4 3D printer completes a print, then restores the lights.
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.prusa_mk4
+    from: printing
+    to: finished
+  conditions: []
+  actions:
+  - action: notify.mobile_app_samsung_galaxy_a54
+    metadata: {}
+    data:
+      title: 3D print DONE!
+      message: '✅ 3D print is succesfuly done! '
+  - action: scene.create
+    data:
+      snapshot_entities:
+      - light.bulb_e27_cws_globe_806lm_hruska
+      - light.home_assistant_voice_0a36ed_led_ring
+      - light.led_strip_studio
+      scene_id: before_printer_notification
+  - action: light.turn_on
+    metadata: {}
+    data:
+      flash: long
+      transition: 2
+      rgb_color:
+      - 0
+      - 255
+      - 0
+    target:
+      entity_id: light.bulb_e27_cws_globe_806lm_hruska
+  - action: light.turn_on
+    metadata: {}
+    target:
+      entity_id: light.home_assistant_voice_0a36ed_led_ring
+    data:
+      transition: 2
+      flash: short
+      rgb_color:
+      - 0
+      - 255
+      - 0
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media:
+        media_content_id: media-source://media_source/local/music/Intro GEN4_final
+          [04-May-25].wav
+        media_content_type: audio/x-wav
+        metadata:
+          title: Intro GEN4_final [04-May-25].wav
+          thumbnail:
+          media_class: music
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+          - media_content_type: ''
+            media_content_id: media-source://media_source/local/music
+          browse_entity_id: media_player.living_room_speaker
+    target:
+      device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+  - action: assist_satellite.announce
+    metadata: {}
+    data:
+      message: The print is done!
+      preannounce: true
+    target:
+      device_id: 0de8f84894590a4024e5b0b0199cc7b9
+  - action: light.turn_on
+    metadata: {}
+    data:
+      rgb_color:
+      - 4
+      - 255
+      - 0
+      brightness_pct: 100
+      flash: long
+    target:
+      entity_id: light.led_strip_studio
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - target:
+      entity_id: scene.before_printer_notification
+    action: scene.turn_on
+    data:
+      transition: 2
+  mode: single
+- id: '1759769689469'
+  alias: Turn on Kitchen and Living Room Lights on Arrival (Fanda)
+  description: 'Turns on lights in the kitchen and living room when a device enters
+    the home zone. (IKEA CWS fix – nejdřív CT, pak jas)
+
+    '
+  triggers:
+  - device_id: e9c829a87feacde4951010e10c91075a
+    domain: device_tracker
+    entity_id: 6f2d53b228c743b40c3c03934db1a61c
+    type: enters
+    trigger: device
+    zone: zone.home
+  conditions: []
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+      - light.bulb_e27_cws_globe_806lm_hruska
+    data:
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      transition: 0.5
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    data:
+      transition: 5
+      brightness: 254
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+      - light.bulb_e27_cws_globe_806lm_hruska
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - type: turn_on
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
+  mode: single
+- id: '1760463399375'
+  alias: the PC
+  description: ''
+  triggers:
+  - trigger: tag
+    tag_id: ca3cd72f-efa6-4667-824c-4d2f938b1206
+    id: NFC_studio_stul
+  conditions: []
+  actions:
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.3
+    target:
+      device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media:
+        media_content_id: media-source://media_source/local/music/Intro GEN4_final
+          [04-May-25].wav
+        media_content_type: audio/x-wav
+        metadata:
+          title: Intro GEN4_final [04-May-25].wav
+          thumbnail:
+          media_class: music
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+          - media_content_type: ''
+            media_content_id: media-source://media_source/local/music
+          browse_entity_id: media_player.living_room_speaker
+    target:
+      device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+  - type: turn_on
+    device_id: e4d0ded346e623d910c07c934857c5e8
+    entity_id: fafc27fe32212dec281d1339bd0fc644
+    domain: switch
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.wake_on_lan_10_ff_e0_6c_14_60
+  - action: light.turn_on
+    metadata: {}
+    data:
+      transition: 5
+      brightness_pct: 100
+      rgb_color:
+      - 253
+      - 142
+      - 38
+    target:
+      device_id: 0da60e5d004467ede3e483e64210684a
+  mode: single
+- id: '1760636015542'
+  alias: Generate Personalized Welcome and Market Update on Arrival
+  description: 'Greets the user upon arrival with a personalized welcome message and
+    a summary of the technological stock market, delivered via notification and spoken
+    aloud.
+
+    '
+  triggers:
+  - trigger: state
+    entity_id:
+    - person.fanda_simonka_home
+    to: home
+  conditions: []
+  actions:
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: personalized_welcome_and_market_update
+      instructions: "{% if trigger is defined and trigger.to_state is defined %}\n
+        \ Generate a short, friendly welcome home message for {{\n  trigger.to_state.attributes.friendly_name
+        }}.\n{% else %}\n  Generate a short, friendly welcome home message for the
+        user.\n{% endif %} Then generate a very short summary of the current technological
+        stock market situation. Provide only one response and don’t give options.\n"
+      entity_id: ai_task.openai_ai_task
+    response_variable: ai_response
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: '{{ ai_response.data }}'
+  mode: single
+- id: '1760638473413'
+  alias: Daily Smart Home Summary
+  description: 'Generates and sends a daily natural-language summary of home activity
+    and energy usage at 21:00.
+
+    '
+  triggers:
+  - at: '21:05:00'
+    trigger: time
+  conditions: []
+  actions:
+  - action: ai_task.generate_data
+    metadata: {}
+    data:
+      task_name: daily_home_summary
+      entity_id: ai_task.openai_ai_task
+      instructions: "Hello! Here is your daily home data summary:\n\n- Prusa MK4S
+        smart plug:\n    - Power: {{ states('sensor.smart_plug_prusa_mk4s_vykon')
+        }} Watts (This is the **current** power draw, not a daily total.)\n\n    {#
+        Current State Logic (Printing vs. Idle) #}\n    {% set prusa_power = states('sensor.smart_plug_prusa_mk4s_vykon')
+        | float(0) %}\n    {% set prusa_state = states('switch.smart_plug_prusa_mk4s')
+        %}\n\n    - State:\n    {% if prusa_state == 'on' %}\n        {% if prusa_power
+        >= 15 %}\n            **Printing** ({{ prusa_power }} W is above the 15W idle
+        threshold).\n        {% else %}\n            **Idle/On** ({{ prusa_power }}
+        W means the printer is **not printing right now**).\n        {% endif %}\n
+        \   {% else %}\n        **Off**\n    {% endif %}\n\n    - Daily energy consumption:
+        {{ states('prusa_daily_energy') }} **kWh**\n\n{# --- Total Activity Summary
+        (Using Template/History Stats) --- #}\n\n{% set printing_duration = states('sensor.prusa_mk4s_printing_duration_today')
+        %}\n{% if printing_duration | string not in ['0:00:00','unknown','unavailable','']
+        %}\n    - Prusa MK4S Total Printing Time: Your 3D printer was actively running
+        a print job for **{{ printing_duration }}** today.\n{% endif %}\n\n- Desktop
+        PC:\n    - State: {{ states('switch.smart_plug_desktop_pc') }}\n    - Power:
+        {{ states('sensor.smart_plug_desktop_pc_vykon') }} Watts (This is the **current**
+        power draw.)\n    - Daily energy consumption: {{ states('desktop_pc_daily_energy')
+        }} **kWh**\n{% set pc_hours = states('sensor.desktop_pc_active_duration_today')
+        | float(0) %}\n{% if pc_hours > 0 %}\n    - Active Time: **{{ (pc_hours *
+        60) | round(0) }} min** (≈ {{ pc_hours | round(2) }} h)\n{% endif %}\n\n-
+        Cognitive light:\n    - State: {{ states('switch.smart_plug_cognitive_light')
+        }}\n    - Power: {{ states('sensor.smart_plug_cognitive_light_vykon') }} Watts\n
+        \   - Daily energy consumption: {{ states('cognitive_light_daily_energy')
+        }} **kWh**\n\n- Studio plug (audio interface, speakers, synths):\n    - State:
+        {{ states('switch.ikea_of_sweden_inspelning_smart_plug') }}\n    - Power:
+        {{ states('sensor.ikea_of_sweden_inspelning_smart_plug_vykon') }} Watts\n
+        \   - Daily energy consumption: {{ states('studio_daily_energy') }} **kWh**\n\n{%
+        set studio_duration = states('sensor.studio_active_duration_today') %}\n{%
+        if studio_duration | string not in ['0:00:00','unknown','unavailable','']
+        %}\n    - Studio Total Active Time: The studio gear was active for **{{ studio_duration
+        }}** today.\n{% endif %}\n\n{# --- Motion and Kitchen Activity via history_stats
+        --- #}\n\n{# Hallway (Chodba) #}\n{% set h_count   = states('sensor.hallway_motion_count_today')
+        | int(0) %}\n{% set h_hours   = states('sensor.hallway_motion_time_today_h')
+        | float(0) %}\n{% set h_minutes = (h_hours * 60) | round(0) %}\n{% set h_yest
+        \   = states('sensor.hallway_motion_count_yesterday') | int(0) %}\n{% set
+        h_diff    = h_count - h_yest %}\n{% set h_last    = states.binary_sensor.motion_sensor_chodba.last_changed
+        %}\n\n- Presence (hallway motion):\n{% if h_count > 0 %}\n    - Events today:
+        **{{ h_count }}**\n    - Active time: **{{ h_minutes }} min**\n    - Last
+        motion: around **{{ as_local(h_last).strftime('%H:%M') }}**\n    - Trend vs
+        yesterday: {% if h_diff > 0 %}+{{ h_diff }}{% elif h_diff < 0 %}{{ h_diff
+        }}{% else %}no change{% endif %}\n{% else %}\n    No motion was recorded in
+        the hallway today.\n{% endif %}\n\n{# Kitchen activity (vibration) #}\n{%
+        set k_count   = states('sensor.kitchen_activity_count_today') | int(0) %}\n{%
+        set k_hours   = states('sensor.kitchen_activity_time_today_h') | float(0)
+        %}\n{% set k_minutes = (k_hours * 60) | round(0) %}\n{% set k_yest    = states('sensor.kitchen_activity_count_yesterday')
+        | int(0) %}\n{% set k_diff    = k_count - k_yest %}\n\n- Kitchen activity:\n{%
+        if k_count > 0 %}\n    - Events today: **{{ k_count }}**\n    - Active time:
+        **{{ k_minutes }} min**\n    - Trend vs yesterday: {% if k_diff > 0 %}+{{
+        k_diff }}{% elif k_diff < 0 %}{{ k_diff }}{% else %}no change{% endif %}\n{%
+        else %}\n    No activity was detected on the kitchen counter today.\n{% endif
+        %}\n\nSummarize in a friendly, narrative tone. Mention notable device activity
+        (e.g. when the printer was active, or which devices were left on). End with
+        a short positive note about the evening.\n"
+    response_variable: ai_summary
+  - action: persistent_notification.create
+    data:
+      title: Denní přehled domácnosti
+      message: '{{ ai_summary.data }}'
+    enabled: true
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.55
+    target:
+      device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+    enabled: true
+  - action: tts.speak
+    metadata: {}
+    data:
+      cache: true
+      media_player_entity_id: media_player.living_room_speaker
+      message: '{{ ai_summary.data }}'
+    target:
+      entity_id:
+      - tts.piper
+  - action: notify.mobile_app_samsung_galaxy_a546b
+    metadata: {}
+    data:
+      message: '{{ ai_summary.data }}'
+      title: Denní přehled domácnosti
+  mode: single
+- id: '1760977920980'
+  alias: Control Bedroom Lights with Remote Button
+  description: Toggles the state of two lights using a remote button. If the first
+    light is on, it's turned off and the second flashes on. Otherwise, both lights
+    are turned on.
+  triggers:
+  - device_id: c2ca6a1c30334c0897707094e47d39d3
+    domain: zha
+    type: remote_button_short_press
+    subtype: button_2
+    trigger: device
+  conditions: []
+  actions:
+  - if:
+    - condition: device
+      type: is_on
+      device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
+      entity_id: 0f4ab28dfe75fd863692bbedfbf5b0c4
+      domain: light
+    then:
+    - action: light.turn_off
+      metadata: {}
+      data:
+        transition: 4
+      target:
+        device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
+    - type: turn_off
+      device_id: 6dba0cc9c74c954bf83223e8dd36ffe0
+      entity_id: d16efba36d568bcb9b83e2ae961a2508
+      domain: light
+    else:
+    - action: light.turn_on
+      metadata: {}
+      data:
+        transition: 4
+        rgb_color:
+        - 234
+        - 97
+        - 97
+        brightness_pct: 100
+      target:
+        device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
+    - type: turn_on
+      device_id: 6dba0cc9c74c954bf83223e8dd36ffe0
+      entity_id: d16efba36d568bcb9b83e2ae961a2508
+      domain: light
+  mode: single
+- id: '1761582140338'
+  alias: Turn on 3D Printer with Tag Scan
+  description: Turns on a 3D printer when the NFC tag is scanned.
+  triggers:
+  - trigger: tag
+    tag_id: 31c17bb4-9ca2-40b4-a4b3-c78e390342c9
+  conditions: []
+  actions:
+  - type: toggle
+    device_id: ab2ce9bc92f48e067bb98f85d58a7feb
+    entity_id: 0aafc24f23e3df48f27527448f4e2e4e
+    domain: switch
+  mode: single
+- *id001
+- *id001
+- *id001
+- *id001
+- *id001
+- id: '1762973628996'
+  alias: Notify when Prusa MK4 finishes printing (AI summary + snapshot + quiet nights)
+  description: AI shrnutí tisku (~200 slov), notifikace s tlačítkem pro vypnutí zásuvky,
+    vizuální cue a návrat původního stavu světel.
+  triggers:
+  - entity_id: sensor.prusa_mk4
+    from: printing
+    to: finished
+    for: 00:00:05
+    trigger: state
+  conditions:
+  - condition: template
+    value_template: '{% set last = state_attr(''automation.notify_when_prusa_mk4_finishes_printing_ai_summary_snapshot_quiet_nights'',''last_triggered'')
+      %} {{ last is none or (as_timestamp(now()) - as_timestamp(last)) > 300 }}
+
+      '
+    enabled: false
+  actions:
+  - data:
+      scene_id: before_printer_notification
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_hruska
+      - light.home_assistant_voice_0a36ed_led_ring
+      - light.led_strip_studio
+    action: scene.create
+  - delay: 00:00:01
+  - response_variable: ai_msg
+    data:
+      instructions: 'You are Home Assistant. Write a friendly, ~200-word notification
+        for the user that the Prusa MK4 print has just finished. Summarize the job
+        using the known context: - File name: "{{ file_name }}" - Material: "{{ material
+        }}" Include: - one-sentence recap of the model or purpose inferred from the
+        file name if possible, - any handling/cooling advice for the given material
+        (generic, non-technical, safe), - quick next steps (e.g., wait X minutes before
+        removing, check bed/first layer, store filament dry), - a positive, motivating
+        closing line. Keep it concise, readable on mobile (short paragraphs, no excessive
+        lists), Czech language, and avoid hallucinating exact print parameters.
+
+        '
+    action: ai_task.generate_data
+  - data:
+      title: 3D tisk dokončen
+      message: "{{ ai_msg.response\n   if ai_msg is defined and ai_msg.response |
+        default('') | length > 0\n   else \"✅ 3D tisk byl úspěšně dokončen. Náhled
+        a doporučení se nepodařilo vygenerovat, ale tisk je hotový. Můžete nyní bezpečně
+        vyjmout výtisk. \U0001F44D\" }}\n"
+      data:
+        tag: prusa-finished
+        actions:
+        - action: TURN_OFF_PRUSA_PLUG
+          title: Vypnout zásuvku Prusa
+          destructive: true
+    action: '{{ notif_target }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ is_day }}'
+      sequence:
+      - target:
+          entity_id:
+          - light.bulb_e27_cws_globe_806lm_hruska
+          - light.home_assistant_voice_0a36ed_led_ring
+          - light.led_strip_studio
+        data:
+          rgb_color: '{{ green }}'
+          brightness_pct: 100
+          flash: long
+          transition: 2
+        action: light.turn_on
+      - target:
+          entity_id: '{{ media_player_entity }}'
+        data:
+          media:
+            media_content_id: '{{ media_id }}'
+            media_content_type: '{{ media_type }}'
+            metadata: {}
+        action: media_player.play_media
+      - data:
+          message: The print is done!
+          preannounce: true
+        action: assist_satellite.announce
+    - conditions:
+      - condition: template
+        value_template: '{{ not is_day }}'
+      sequence:
+      - target:
+          entity_id:
+          - light.bulb_e27_cws_globe_806lm_hruska
+          - light.led_strip_studio
+        data:
+          rgb_color: '{{ green }}'
+          brightness_pct: 60
+          flash: short
+          transition: 2
+        action: light.turn_on
+  - delay: 00:00:10
+  - target:
+      entity_id: '{{ restore_scene }}'
+    data:
+      transition: 2
+    action: scene.turn_on
+  mode: single
+  variables:
+    is_day: '{{ now().hour >= 7 and now().hour < 22 }}'
+    restore_scene: scene.before_printer_notification
+    green:
+    - 0
+    - 255
+    - 0
+    notif_target: notify.mobile_app_samsung_galaxy_a54
+    media_player_entity: media_player.living_room_speaker
+    media_id: media-source://media_source/local/music/Intro GEN4_final [04-May-25].wav
+    media_type: audio/x-wav
+    file_name: '{{ states(''sensor.prusa_mk4_nazev_souboru'') }}'
+    material: '{{ states(''sensor.prusa_mk4_material'') }}'
+- id: '1764498752529'
+  alias: Turn on all lights when PlayStation 4 turns off
+  description: Zapne světla po vypnutí PS4 (IKEA CWS fix + plynulý náběh)
+  triggers:
+  - device_id: 5826ef61ce8f5a4ea4d2edfeebc54edf
+    domain: media_player
+    entity_id: 48df3d0c4acdc90a6e66c8b3f36acf1d
+    type: turned_off
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 1
+  conditions: []
+  actions:
+  - action: remote.send_command
+    target:
+      entity_id: remote.ir_controller
+    data:
+      device: TV Samsung
+      command: power
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      transition: 0.5
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      brightness: 254
+      transition: 4
+  mode: single
+- id: '1764499575822'
+  alias: Turn on Kitchen and Living Room Lights on Arrival (Simonka)
+  description: 'Turns on lights in the kitchen and living room when a device enters
+    the home zone. (IKEA CWS fix – nejdřív CT, pak jas)
+
+    '
+  triggers:
+  - device_id: 5830e6a6f4675964f8b461374e2e1906
+    domain: device_tracker
+    entity_id: f0f22964e50b8227d4c53e5b7901f36d
+    type: enters
+    trigger: device
+    zone: zone.home
+  conditions: []
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+      - light.bulb_e27_cws_globe_806lm_hruska
+    data:
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      transition: 0.5
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    data:
+      transition: 5
+      brightness: 254
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+      - light.bulb_e27_cws_globe_806lm_hruska
+  mode: single
+- id: '1767439659694'
+  alias: Media Time
+  description: ''
+  triggers:
+  - device_id: 5826ef61ce8f5a4ea4d2edfeebc54edf
+    domain: media_player
+    entity_id: 48df3d0c4acdc90a6e66c8b3f36acf1d
+    type: turned_on
+    trigger: device
+  conditions: []
+  actions:
+  - action: remote.send_command
+    target:
+      entity_id: remote.ir_controller
+    data:
+      device: TV Samsung
+      command: power
+  - type: turn_off
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      transition: 0.5
+      color_temp_kelvin: 2700
+      brightness_pct: 40
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      brightness: 76
+      transition: 5
+      color_temp_kelvin: 2700
+  - action: light.turn_off
+    target:
+      entity_id: light.bulb_e27_cws_globe_806lm_hruska
+    data:
+      transition: 5
+  - delay: '00:00:00.7'
+  - action: light.turn_off
+    target:
+      entity_id: light.bulb_e27_cws_globe_806lm_hruska
+  - action: light.turn_on
+    target:
+      entity_id: light.led_strip_studio
+    data:
+      transition: 0.5
+      rgb_color:
+      - 245
+      - 73
+      - 0
+  - delay: '00:00:00.4'
+  - action: light.turn_on
+    target:
+      entity_id: light.led_strip_studio
+    data:
+      transition: 5
+      brightness: 255
+  mode: single
+- id: '1767440741561'
+  alias: Turn off Lights and Stop Media on Departure 2
+  description: Turns off lights in the kitchen and living room and stops media playback
+    when the departure NFC tag is scanned. Also warns via Google speaker if phone
+    battery < 30%.
+  triggers:
+  - trigger: tag
+    tag_id: 7a25784b-b814-418b-9df0-dc2f53b586a8
+    id: NFC_odchod
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data:
+      transition: 2
+    target:
+      device_id:
+      - 825b4237a6bb5b5ddb7bf08a3cbaa279
+      - b7583dab5fd639147c8419ab04878db4
+      - 0da60e5d004467ede3e483e64210684a
+      - d33997dcb9e74f417046016dfe698b16
+      entity_id:
+      - light.led_strip_bedroom
+      - light.bulb_red_bedroom
+  - type: turn_off
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
+  - type: turn_off
+    device_id: e4d0ded346e623d910c07c934857c5e8
+    entity_id: fafc27fe32212dec281d1339bd0fc644
+    domain: switch
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - 365f76f89eb2fdfaa553fc4a8a066d34
+      - 0de8f84894590a4024e5b0b0199cc7b9
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.samsung_galaxy_a54_battery_level
+      below: 30
+    then:
+    - variables:
+        batt: '{{ states(''sensor.samsung_galaxy_a54_battery_level'') | int(0) }}'
+    - action: ai_task.generate_data
+      metadata: {}
+      data:
+        task_name: battery_warning_departure
+        entity_id: ai_task.openai_ai_task
+        instructions: 'Napiš jednu krátkou, přátelskou a lehce osobní větu v češtině.
+          Řekni mi přesnou hodnotu baterie: {{ batt }} %. Kontext: právě odcházím
+          z domu (odpáleno NFC odchod). Vyzvi mě, ať si vezmu telefon nabít nebo powerbanku.
+          Buď stručný (max 1–2 věty) a přidej jedno emoji na konec.
+
+          '
+      response_variable: ai_batt
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.55
+      target:
+        device_id: 365f76f89eb2fdfaa553fc4a8a066d34
+    - action: tts.speak
+      metadata: {}
+      data:
+        cache: true
+        media_player_entity_id: media_player.living_room_speaker
+        message: '{{ ai_batt.data }}'
+      target:
+        entity_id:
+        - tts.piper
+  mode: single
+- id: '1767441268976'
+  alias: Notify when Battery is Low (Simonka)
+  description: ''
+  triggers:
+  - type: battery_level
+    device_id: 5830e6a6f4675964f8b461374e2e1906
+    entity_id: b86e3d838c17d72cea390c67fffe8c7d
+    domain: sensor
+    trigger: device
+    below: 20
+  conditions:
+  - condition: state
+    entity_id: person.simonka
+    state:
+    - home
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    target:
+      entity_id: light.home_assistant_voice_0a36ed_led_ring
+    data:
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      transition: 2
+  mode: single
+- id: '1767804978532'
+  alias: Light Off for High Phone Battery (Fanda)
+  description: turns off LED ring light when its battery level is above 20%.
+  triggers:
+  - type: battery_level
+    device_id: e9c829a87feacde4951010e10c91075a
+    entity_id: 3573dc52be5c3f95ca315885fff5432c
+    domain: sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    above: 20
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.sm_ultra_sim_battery_level
+    above: 20
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    target:
+      entity_id: light.home_assistant_voice_0a36ed_led_ring
+    data:
+      transition: 2
+  mode: single
+- id: '1771772142584'
+  alias: AE Print - MK4S Finished (Smart, robust v2)
+  triggers:
+  - entity_id: sensor.prusa_mk4
+    to: finished
+    trigger: state
+  actions:
+  - wait_template: '{{ states(''sensor.prusa_mk4_nazev_souboru'') not in [''unknown'',''unavailable'','''']
+      }}
+
+      '
+    timeout: 00:01:00
+    continue_on_timeout: true
+  - variables:
+      printer: Prusa MK4S
+      file: '{{ states(''sensor.prusa_mk4_nazev_souboru'') | default('''', true) }}'
+      file_u: '{{ (file | string) | upper }}'
+      job_type: "{% if file_u.startswith('AE_PROD') %}\n  PROD\n{% elif file_u.startswith('AE_TEST')
+        %}\n  TEST\n{% elif file_u.startswith('AE_PROTO') %}\n  PROTO\n{% elif file_u.startswith('AE')
+        %}\n  AE\n{% else %}\n  OTHER\n{% endif %}"
+      color: "{% if job_type == 'PROD' %}\n  3066993\n{% elif job_type == 'TEST' %}\n
+        \ 3447003\n{% elif job_type == 'PROTO' %}\n  16776960\n{% elif job_type ==
+        'AE' %}\n  5763719\n{% else %}\n  8359053\n{% endif %}"
+      title: "{% if job_type == 'PROD' %}\n  ✅ AE PRODUCTION Completed\n{% elif job_type
+        == 'TEST' %}\n  \U0001F9EA AE TEST Completed\n{% elif job_type == 'PROTO'
+        %}\n  \U0001F9E9 AE PROTOTYPE Completed\n{% else %}\n  ✅ AE Print Completed\n{%
+        endif %}"
+      description: "{% if job_type == 'PROD' %}\n  Production job finished and ready
+        for QC + packing.\n{% elif job_type == 'TEST' %}\n  Test print finished. Please
+        evaluate fit/finish and log results.\n{% elif job_type == 'PROTO' %}\n  Prototype
+        finished. Review tolerances and document changes.\n{% else %}\n  Job finished
+        successfully.\n{% endif %}"
+  - condition: template
+    value_template: '{{ file_u.startswith(''AE'') }}'
+  - data:
+      title: '{{ title }}'
+      description: '{{ description }}'
+      color: '{{ color }}'
+      printer: '{{ printer }}'
+      file: '{{ file }}'
+    action: rest_command.discord_print_embed
+  mode: single
+- id: '1771787973375'
+  alias: AE Print - MK4S (Capture + Notify, AE only)
+  triggers:
+  - entity_id: sensor.prusa_mk4
+    to: printing
+    id: start
+    trigger: state
+  - entity_id: sensor.prusa_mk4
+    to: finished
+    id: finished
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: start
+      sequence:
+      - data:
+          entity_id: input_text.ae_last_print_file
+          value: ''
+        action: input_text.set_value
+      - wait_template: '{{ states(''sensor.prusa_mk4_nazev_souboru'') not in [''unknown'',''unavailable'','''']
+          }}
+
+          '
+        timeout: 00:00:45
+        continue_on_timeout: true
+      - variables:
+          file: '{{ states(''sensor.prusa_mk4_nazev_souboru'') | string | trim }}'
+          file_u: '{{ file | upper }}'
+      - condition: template
+        value_template: '{{ file_u.startswith(''AE'') and file != '''' }}'
+      - data:
+          entity_id: input_text.ae_last_print_file
+          value: '{{ file }}'
+        action: input_text.set_value
+    - conditions:
+      - condition: trigger
+        id: finished
+      sequence:
+      - variables:
+          printer: Prusa MK4S
+          file: '{{ states(''input_text.ae_last_print_file'') | string | trim }}'
+          file_u: '{{ file | upper }}'
+          job_type: '{% if file_u.startswith(''AE_PROD'') %}PROD {% elif file_u.startswith(''AE_TEST'')
+            %}TEST {% elif file_u.startswith(''AE_PROTO'') %}PROTO {% elif file_u.startswith(''AE'')
+            %}AE {% else %}OTHER {% endif %}'
+          color: '{% if job_type == ''PROD'' %}3066993 {% elif job_type == ''TEST''
+            %}3447003 {% elif job_type == ''PROTO'' %}16776960 {% elif job_type ==
+            ''AE'' %}5763719 {% else %}8359053 {% endif %}'
+          title: "{% if job_type == 'PROD' %}✅ AE PRODUCTION Completed {% elif job_type
+            == 'TEST' %}\U0001F9EA AE TEST Completed {% elif job_type == 'PROTO' %}\U0001F9E9
+            AE PROTOTYPE Completed {% else %}✅ AE Print Completed {% endif %}"
+          description: "{% if job_type == 'PROD' %}\n  Production job finished and
+            ready for QC + packing.\n{% elif job_type == 'TEST' %}\n  Test print finished.
+            Please evaluate fit/finish and log results.\n{% elif job_type == 'PROTO'
+            %}\n  Prototype finished. Review tolerances and document changes.\n{%
+            else %}\n  Job finished successfully.\n{% endif %}"
+      - condition: template
+        value_template: '{{ file_u.startswith(''AE'') and file != '''' }}'
+      - data:
+          title: '{{ title }}'
+          description: '{{ description }}'
+          color: '{{ color }}'
+          printer: '{{ printer }}'
+          file: '{{ file }}'
+        action: rest_command.discord_print_embed
+  mode: restart
+- id: '1774210332085'
+  alias: Turn on Kitchen Light with Vibration (IKEA fix)
+  description: Vibration → denní bílá 4000K, 100% jas (3-krok fix), vypnutí po 60
+    min
+  triggers:
+  - entity_id: binary_sensor.vibration_sensor_kitchen
+    from: 'off'
+    to: 'on'
+    for: 00:00:02
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: media_player.playstation_4
+    state:
+    - 'off'
+    - standby
+    - idle
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      brightness_pct: 100
+      transition: 0.5
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      color_temp_kelvin: 4000
+      brightness_pct: 100
+      transition: 0.5
+  - delay: '00:00:00.7'
+  - action: light.turn_on
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      brightness_pct: 100
+      transition: 0.5
+  - delay: 01:00:00
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+    data:
+      transition: 3
+  - delay: '00:00:00.7'
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.bulb_e27_cws_globe_806lm_kitchen
+      - light.bulb_e27_cws_globe_806lm_sporak
+  mode: restart
+- id: tmp_write_config
+  alias: _tmp_write_config
+  triggers:
+    platform: event
+    event_type: tmp_write_config
+  actions:
+    action: shell_command.write_http_config

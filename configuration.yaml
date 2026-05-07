@@ -1,0 +1,199 @@
+default_config:
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+utility_meter:
+  prusa_daily_energy:
+    source: sensor.smart_plug_prusa_mk4s_souhrn_dodavky
+    cycle: daily
+  prusa_monthly_energy:
+    source: sensor.smart_plug_prusa_mk4s_souhrn_dodavky
+    cycle: monthly
+  desktop_pc_daily_energy:
+    source: sensor.smart_plug_desktop_pc_souhrn_dodavky
+    cycle: daily
+  desktop_pc_monthly_energy:
+    source: sensor.smart_plug_desktop_pc_souhrn_dodavky
+    cycle: monthly
+  cognitive_light_daily_energy:
+    source: sensor.smart_plug_cognitive_light_souhrn_dodavky
+    cycle: daily
+  cognitive_light_monthly_energy:
+    source: sensor.smart_plug_cognitive_light_souhrn_dodavky
+    cycle: monthly
+  studio_daily_energy:
+    source: sensor.ikea_of_sweden_inspelning_smart_plug_souhrn_dodavky
+    cycle: daily
+  studio_monthly_energy:
+    source: sensor.ikea_of_sweden_inspelning_smart_plug_souhrn_dodavky
+    cycle: monthly
+
+sensor:
+  - platform: history_stats
+    name: Prusa MK4S Printing Duration Today
+    entity_id: binary_sensor.prusa_mk4s_is_printing
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Studio Active Duration Today
+    entity_id: binary_sensor.studio_is_active
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Desktop PC Active Duration Today
+    entity_id: binary_sensor.desktop_pc_is_active
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Hallway Motion Count Today
+    entity_id: binary_sensor.motion_sensor_chodba
+    state: "on"
+    type: count
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Hallway Motion Time Today (h)
+    entity_id: binary_sensor.motion_sensor_chodba
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Hallway Motion Count Yesterday
+    entity_id: binary_sensor.motion_sensor_chodba
+    state: "on"
+    type: count
+    start: "{{ today_at() - timedelta(days=1) }}"
+    end: "{{ today_at() }}"
+  - platform: history_stats
+    name: Kitchen Activity Count Today
+    entity_id: binary_sensor.vibration_sensor_kitchen
+    state: "on"
+    type: count
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Kitchen Activity Time Today (h)
+    entity_id: binary_sensor.vibration_sensor_kitchen
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Kitchen Activity Count Yesterday
+    entity_id: binary_sensor.vibration_sensor_kitchen
+    state: "on"
+    type: count
+    start: "{{ today_at() - timedelta(days=1) }}"
+    end: "{{ today_at() }}"
+
+template:
+  - binary_sensor:
+      - name: Prusa MK4S Is Printing
+        unique_id: prusa_mk4s_is_printing
+        device_class: running
+        state: "{{ states('sensor.smart_plug_prusa_mk4s_vykon') | float(0) >= 15 }}"
+  - binary_sensor:
+      - name: Studio Is Active
+        unique_id: studio_is_active
+        device_class: running
+        state: "{{ states('sensor.ikea_of_sweden_inspelning_smart_plug_vykon') | float(0) >= 40 }}"
+  - binary_sensor:
+      - name: Desktop PC Is Active
+        unique_id: desktop_pc_is_active
+        device_class: running
+        state: "{{ states('sensor.smart_plug_desktop_pc_vykon') | float(0) >= 20 }}"
+  - trigger:
+      - platform: time
+        at: "00:00:00"
+      - platform: state
+        entity_id:
+          - binary_sensor.motion_sensor_chodba
+          - binary_sensor.vibration_sensor_kitchen
+        to: "on"
+    sensor:
+      - name: Corridor First Motion Today
+        unique_id: corridor_first_motion_today
+        device_class: timestamp
+        state: >
+          {% if trigger.platform == 'time' %}
+            unknown
+          {% elif trigger.entity_id == 'binary_sensor.motion_sensor_chodba' %}
+            {{ iif(this.state in ['unknown','unavailable',''], now(), this.state) }}
+          {% else %}
+            {{ this.state }}
+          {% endif %}
+      - name: Corridor Last Motion Today
+        unique_id: corridor_last_motion_today
+        device_class: timestamp
+        state: >
+          {% if trigger.entity_id == 'binary_sensor.motion_sensor_chodba' %}
+            {{ now() }}
+          {% elif trigger.platform == 'time' %}
+            unknown
+          {% else %}
+            {{ this.state }}
+          {% endif %}
+      - name: Kitchen First Vibration Today
+        unique_id: kitchen_first_vibration_today
+        device_class: timestamp
+        state: >
+          {% if trigger.platform == 'time' %}
+            unknown
+          {% elif trigger.entity_id == 'binary_sensor.vibration_sensor_kitchen' %}
+            {{ iif(this.state in ['unknown','unavailable',''], now(), this.state) }}
+          {% else %}
+            {{ this.state }}
+          {% endif %}
+      - name: Kitchen Last Vibration Today
+        unique_id: kitchen_last_vibration_today
+        device_class: timestamp
+        state: >
+          {% if trigger.entity_id == 'binary_sensor.vibration_sensor_kitchen' %}
+            {{ now() }}
+          {% elif trigger.platform == 'time' %}
+            unknown
+          {% else %}
+            {{ this.state }}
+          {% endif %}
+
+rest_command:
+  discord_print_embed:
+    url: !secret discord_webhook_prints
+    method: POST
+    content_type: "application/json"
+    payload: >
+      {
+        "embeds": [
+          {
+            "author": {
+              "namcp /config/.storage/lovelace.my_dash.bak /config/.storage/lovelace.my_dash && python3 -c "import json; json.load(open('/config/.storage/lovelace.my_dash'))" && echo VALID
+              e": "Acoustic Empire • Print Lab",
+              "icon_url": "https://raw.githubusercontent.com/franksehnal-netizen/acoustic-empire/main/profile%20logo%20Acoustic%20Empire.png"
+            },
+            "title": "{{ title }}",
+            "description": "{{ description }}",
+            "color": {{ color }},
+            "thumbnail": {
+              "url": "https://raw.githubusercontent.com/franksehnal-netizen/acoustic-empire/main/Prusa%20MK4S%20picture.png"
+            },
+            "fields": [
+              { "name": "🖨 Printer", "value": "{{ printer }}", "inline": true },
+              { "name": "📄 File", "value": "{{ file }}", "inline": false }
+            ],
+            "footer": { "text": "Acoustic Empire • Internal System" },
+            "timestamp": "{{ now().isoformat() }}"
+          }
+        ]
+      }

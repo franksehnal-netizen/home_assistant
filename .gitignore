@@ -1,0 +1,15 @@
+secrets.yaml
+.storage/
+home-assistant.log*
+*.log
+*.log.fault
+*.log.old
+.ha_run.lock
+tts/
+image/
+.cache/
+claude_notes.md
+zigbee.db*
+www/community/
+home-assistant_v2.db*
+.cloud/

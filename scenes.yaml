@@ -1,0 +1,431 @@
+- id: '1759601050690'
+  name: Movie time
+  entities:
+    light.bulb_e27_cws_globe_806lm_sporak:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: xy
+      brightness: 254
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 347.826
+      - 27.059
+      rgb_color:
+      - 255
+      - 186
+      - 200
+      xy_color:
+      - 0.401
+      - 0.308
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 2
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_kitchen:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: xy
+      brightness: 254
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 7.143
+      - 32.941
+      rgb_color:
+      - 255
+      - 181
+      - 171
+      xy_color:
+      - 0.434
+      - 0.331
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 1
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_hruska:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      off_with_transition: true
+      off_brightness: 254
+      friendly_name: living room light
+      supported_features: 44
+      state: 'off'
+    switch.smart_plug_cognitive_light:
+      friendly_name: Smart plug - cognitive light
+      state: 'off'
+  metadata:
+    switch.smart_plug_cognitive_light:
+      entity_only: true
+  icon: mdi:projector-screen-variant
+- id: '1759601858302'
+  name: Normální stav
+  entities:
+    light.bulb_e27_cws_globe_806lm_hruska:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 2824
+      color_temp: 354
+      hs_color:
+      - 28.14
+      - 61.899
+      rgb_color:
+      - 255
+      - 171
+      - 97
+      xy_color:
+      - 0.513
+      - 0.386
+      off_with_transition: false
+      off_brightness:
+      friendly_name: living room light
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_sporak:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 3521
+      color_temp: 284
+      hs_color:
+      - 27.152
+      - 44.32
+      rgb_color:
+      - 255
+      - 193
+      - 142
+      xy_color:
+      - 0.452
+      - 0.373
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 2
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_kitchen:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 3584
+      color_temp: 279
+      hs_color:
+      - 27.093
+      - 42.979
+      rgb_color:
+      - 255
+      - 195
+      - 145
+      xy_color:
+      - 0.448
+      - 0.373
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 1
+      supported_features: 44
+      state: 'on'
+  metadata: {}
+- id: '1760297290426'
+  name: Main room sleep mode
+  entities:
+    light.bulb_e27_cws_globe_806lm_hruska:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      off_with_transition: true
+      off_brightness: 130
+      friendly_name: living room light
+      supported_features: 44
+      state: 'off'
+    light.bulb_e27_cws_globe_806lm_kitchen:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      off_with_transition: true
+      off_brightness: 254
+      friendly_name: kitchen light 1
+      supported_features: 44
+      state: 'off'
+    light.bulb_e27_cws_globe_806lm_sporak:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      off_with_transition: true
+      off_brightness: 254
+      friendly_name: kitchen light 2
+      supported_features: 44
+      state: 'off'
+    light.led_strip_studio:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      off_with_transition: false
+      off_brightness: 254
+      friendly_name: LED Strip - studio
+      supported_features: 44
+      state: 'off'
+  metadata: {}
+  icon: mdi:lightbulb-night
+- id: '1760383647222'
+  name: Bed time
+  entities:
+    light.led_strip_bedroom:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: xy
+      brightness: 254
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 276.923
+      - 40.784
+      rgb_color:
+      - 215
+      - 151
+      - 255
+      xy_color:
+      - 0.313
+      - 0.21
+      off_with_transition: false
+      off_brightness:
+      friendly_name: LED Strip - bedroom
+      supported_features: 44
+      state: 'on'
+  icon: mdi:power-sleep
+  metadata: {}
+- id: '1760462630646'
+  name: Main room after my arrival
+  entities:
+    light.bulb_e27_cws_globe_806lm_hruska:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 2824
+      color_temp: 354
+      hs_color:
+      - 28.14
+      - 61.899
+      rgb_color:
+      - 255
+      - 171
+      - 97
+      xy_color:
+      - 0.513
+      - 0.386
+      off_with_transition: false
+      off_brightness:
+      friendly_name: living room light
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_kitchen:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 3584
+      color_temp: 279
+      hs_color:
+      - 27.093
+      - 42.979
+      rgb_color:
+      - 255
+      - 195
+      - 145
+      xy_color:
+      - 0.448
+      - 0.373
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 1
+      supported_features: 44
+      state: 'on'
+    light.bulb_e27_cws_globe_806lm_sporak:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 4000
+      min_mireds: 250
+      max_mireds: 454
+      effect_list:
+      - 'off'
+      - colorloop
+      supported_color_modes:
+      - color_temp
+      - xy
+      effect: 'off'
+      color_mode: color_temp
+      brightness: 254
+      color_temp_kelvin: 3521
+      color_temp: 284
+      hs_color:
+      - 27.152
+      - 44.32
+      rgb_color:
+      - 255
+      - 193
+      - 142
+      xy_color:
+      - 0.452
+      - 0.373
+      off_with_transition: false
+      off_brightness:
+      friendly_name: kitchen light 2
+      supported_features: 44
+      state: 'on'
+    switch.smart_plug_cognitive_light:
+      friendly_name: Smart plug - cognitive light
+      state: 'on'
+  icon: mdi:account
+  metadata: {}
