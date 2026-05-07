@@ -31,7 +31,7 @@
       - 0
       transition: 2
   mode: single
-- &id001
+-
   id: pohybove_svetlo_chodba_casova_intenzita
   alias: Chodba – Světlo dle času a intenzity (IKEA fix, smooth + logs)
   description: 3s rampa ON, 5s fade-out OFF. Den 100 %, noc 35 %. CT změna znovu pošle
