@@ -7,6 +7,25 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+recorder:
+  purge_keep_days: 14
+  exclude:
+    entity_globs:
+      - button.*_identifikovat
+      - update.*_firmware
+      - sensor.*_odhadovana_vzdalenost
+      - device_tracker.n_g_*
+      - device_tracker.piston_*
+      - device_tracker.niu_*
+      - device_tracker.wsbc*
+      - device_tracker.s855*
+      - device_tracker.sbf1*
+    entities:
+      - sensor.frank_sehnal_naposledy_online
+      - sensor.frank_sehnal_stav_online
+      - sensor.frank_sehnal_prave_hraje
+      - image.frank_sehnal_prave_hraje
+
 utility_meter:
   prusa_daily_energy:
     source: sensor.smart_plug_prusa_mk4s_souhrn_dodavky
@@ -196,3 +215,21 @@ rest_command:
           }
         ]
       }
+  ae_log_production:
+    url: "https://script.google.com/macros/s/AKfycbx-aKsNeEkha6O0axkefxXejwc9zGqZz4WiZBKf-F-19bw9YsJMk_f6Pkeq-qPMWrUZ/exec?action=log_production"
+    method: POST
+    content_type: "application/json"
+    payload: >-
+      {
+        "gcode_filename": "{{ states('input_text.ae_last_print_file') }}",
+        "started_at": "{{ states('sensor.prusa_mk4_spusteni_tisku') }}",
+        "finished_at": "{{ now().isoformat() }}",
+        "duration_min": {{ ((as_timestamp(now()) - as_timestamp(states('sensor.prusa_mk4_spusteni_tisku'), 0)) / 60) | round(1) }},
+        "material_used_g": {{ state_attr('sensor.prusa_mk4_material', 'grams') | float(0) | round(1) }},
+        "daily_energy_kwh": {{ states('prusa_daily_energy') | float(0) | round(3) }},
+        "printer": "MK4S"
+      }
+shell_command:
+  # execline (HAOS shell_command engine) nepodporuje && chain — proto bash -c wrapper
+  git_commit_push: >-
+    bash -c "cd /config && git add -A && git commit -m '{{ message }}' && git push origin main 2>&1"

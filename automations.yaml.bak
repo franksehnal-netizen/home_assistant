@@ -1,4 +1,4 @@
-﻿- id: '1759085159743'
+- id: '1759085159743'
   alias: Notify when Phone Battery is Low
   description: Sends a notification to your mobile phone when its battery level falls
     below 36%.
@@ -145,27 +145,24 @@
     - action: light.turn_off
       target:
         entity_id: light.bulb_e27_cws_globe_806lm_hruska
-    - action: switch.turn_off
-
-      target:
-
-        entity_id: switch.smart_plug_cognitive_light
-    - action: switch.turn_off
-
-      target:
-
-        entity_id: switch.ikea_of_sweden_inspelning_smart_plug
+    - type: turn_off
+      device_id: e53b18d003ce543277e93b4c229e8e43
+      entity_id: d6e45af4e7951f50331b5abab88e5c0d
+      domain: switch
+    - type: turn_off
+      device_id: e4d0ded346e623d910c07c934857c5e8
+      entity_id: fafc27fe32212dec281d1339bd0fc644
+      domain: switch
     - if:
       - condition: state
         entity_id: sensor.prusa_mk4
         state: printing
       then: []
       else:
-      - action: switch.turn_off
-
-        target:
-
-          entity_id: switch.smart_plug_prusa_mk4s
+      - type: turn_off
+        device_id: ab2ce9bc92f48e067bb98f85d58a7feb
+        entity_id: 0aafc24f23e3df48f27527448f4e2e4e
+        domain: switch
     - action: media_player.volume_set
       metadata: {}
       data:
@@ -264,11 +261,10 @@
       minutes: 0
       seconds: 5
       milliseconds: 0
-  - action: switch.turn_on
-
-    target:
-
-      entity_id: switch.smart_plug_cognitive_light
+  - type: turn_on
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
   mode: single
 - id: '1760463399375'
   alias: the PC
@@ -290,11 +286,10 @@
       media_content_type: audio/x-wav
     target:
       entity_id: media_player.home_assistant_voice_0a36ed_media_player
-  - action: switch.turn_on
-
-    target:
-
-      entity_id: switch.ikea_of_sweden_inspelning_smart_plug
+  - type: turn_on
+    device_id: e4d0ded346e623d910c07c934857c5e8
+    entity_id: fafc27fe32212dec281d1339bd0fc644
+    domain: switch
   - action: button.press
     metadata: {}
     data: {}
@@ -436,11 +431,10 @@
         transition: 4
       target:
         device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
-    - action: light.turn_off
-
-      target:
-
-        entity_id: light.bulb_red_bedroom
+    - type: turn_off
+      device_id: 6dba0cc9c74c954bf83223e8dd36ffe0
+      entity_id: d16efba36d568bcb9b83e2ae961a2508
+      domain: light
     else:
     - action: light.turn_on
       metadata: {}
@@ -453,11 +447,10 @@
         brightness_pct: 100
       target:
         device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
-    - action: light.turn_on
-
-      target:
-
-        entity_id: light.bulb_red_bedroom
+    - type: turn_on
+      device_id: 6dba0cc9c74c954bf83223e8dd36ffe0
+      entity_id: d16efba36d568bcb9b83e2ae961a2508
+      domain: light
   mode: single
 - id: '1761582140338'
   alias: Turn on 3D Printer with Tag Scan
@@ -572,11 +565,10 @@
     data:
       device: TV Samsung
       command: power
-  - action: switch.turn_off
-
-    target:
-
-      entity_id: switch.smart_plug_cognitive_light
+  - type: turn_off
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
   - action: light.turn_on
     target:
       entity_id:
@@ -646,16 +638,14 @@
       entity_id:
       - light.led_strip_bedroom
       - light.bulb_red_bedroom
-  - action: switch.turn_off
-
-    target:
-
-      entity_id: switch.smart_plug_cognitive_light
-  - action: switch.turn_off
-
-    target:
-
-      entity_id: switch.ikea_of_sweden_inspelning_smart_plug
+  - type: turn_off
+    device_id: e53b18d003ce543277e93b4c229e8e43
+    entity_id: d6e45af4e7951f50331b5abab88e5c0d
+    domain: switch
+  - type: turn_off
+    device_id: e4d0ded346e623d910c07c934857c5e8
+    entity_id: fafc27fe32212dec281d1339bd0fc644
+    domain: switch
   - action: media_player.media_pause
     metadata: {}
     data: {}

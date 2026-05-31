@@ -1,6 +1,19 @@
-# CLAUDE.md — Home Assistant Config
+﻿# CLAUDE.md — Home Assistant Config
 
 Instructions for Claude Code when working with this repository.
+
+---
+
+## Efficiency Rules — Read First
+
+**Priority order for all operations — always use the highest available:**
+
+1. **HA MCP tools** — device state, service calls, announcements (zero browser)
+2. **Samba + PowerShell** — read/write config files directly (`\\192.168.0.42\config`)
+3. **Browser (Studio Code Server)** — last resort only (costs tokens via screenshots)
+
+**Never open the browser just to read or write a YAML file.**
+**Never take a screenshot to check file content — use PowerShell `Get-Content`.**
 
 ---
 
@@ -11,22 +24,46 @@ Instructions for Claude Code when working with this repository.
 | Local address | `192.168.0.42:8123` |
 | Tailscale IP | `100.69.125.67` |
 | HA version | HAOS 2026.4.x |
-| Studio Code Server | `http://192.168.0.42:8123/a0d7b954_vscode` (open from HA sidebar) |
+| Studio Code Server | `http://192.168.0.42:8123/a0d7b954_vscode` (open from HA sidebar only) |
+| Samba share | `\\192.168.0.42\config` user: `fandaborec_NAS` |
 
 ---
 
-## Git Workflow
+## Git Workflow — No Browser Needed
 
-All git operations run in Studio Code Server terminal (`/config` is the working dir).
+Git is handled via `shell_command.git_commit_push` callable through HA MCP:
 
-```bash
-# After making changes:
-git add -A
-git commit -m "short description"
-git push
+```
+service: shell_command.git_commit_push
+data:
+  message: "fix: description of change"
 ```
 
-Credentials are stored in `~/.git-credentials` — no token needed interactively.
+Or via PowerShell to read/write, then HA MCP to commit:
+```powershell
+# Read file
+Get-Content "\\192.168.0.42\config\automations.yaml" -Encoding UTF8
+
+# Write file
+$content | Set-Content "\\192.168.0.42\config\automations.yaml" -Encoding UTF8 -NoNewline
+```
+
+Then call `shell_command.git_commit_push` via HA MCP with a message.
+
+Credentials stored in `~/.git-credentials` on the HA server — no interactive auth needed.
+
+---
+
+## Editing Config Files
+
+**Correct workflow (token-efficient):**
+1. Read via `Get-Content "\\192.168.0.42\config\<file>.yaml"`
+2. Edit via PowerShell string manipulation
+3. Write back via `Set-Content "\\192.168.0.42\config\<file>.yaml" -Encoding UTF8 -NoNewline`
+4. Reload via HA MCP `homeassistant.reload_all` (or specific: `automation.reload`)
+5. Commit via HA MCP `shell_command.git_commit_push`
+
+**Avoid:** opening Studio Code Server, taking screenshots of files, typing in browser terminal.
 
 ---
 
@@ -44,32 +81,6 @@ Excluded (never commit):
 Committed:
 - `configuration.yaml`, `automations.yaml`, `scripts.yaml`, `scenes.yaml`
 - `blueprints/`, `custom_components/`, `www/` (except community/)
-- `.gitignore`, `.HA_VERSION`
-
----
-
-## Editing Automations
-
-### Preferred: Edit YAML directly in Studio Code Server
-1. Open Studio Code Server from HA sidebar
-2. Edit `automations.yaml`
-3. Reload via top bar button or `git commit && git push`
-
-### Via REST API (from Claude in Chrome on HA page)
-```javascript
-// Read automation
-fetch('/api/config/automation/config/{id}', {
-  headers: { Authorization: 'Bearer ' + document.querySelector('home-assistant').hass.auth.data.access_token }
-}).then(r => r.json()).then(console.log)
-
-// Call service
-document.querySelector('home-assistant').hass.callService('domain', 'service', { entity_id: 'entity.id' })
-
-// Get entity state
-document.querySelector('home-assistant').hass.states['entity.id'].state
-```
-
-> Note: REST API calls from external servers (outside local network) fail with 403 CORS.
 
 ---
 
@@ -77,8 +88,8 @@ document.querySelector('home-assistant').hass.states['entity.id'].state
 
 | Entity ID | Friendly name | Type |
 |---|---|---|
-| `light.bulb_e27_cws_globe_806lm_kitchen` | kitchen light 1 | RGB+W |
-| `light.bulb_e27_cws_globe_806lm_sporak` | kitchen light 2 | RGB+W |
+| `light.bulb_e27_cws_globe_806lm_kitchen` | kitchen light 1 | RGB+W (CWS) |
+| `light.bulb_e27_cws_globe_806lm_sporak` | kitchen light 2 | RGB+W (CWS) |
 | `light.kuchyne` | kitchen lights | group |
 | `light.obyvak_kuchyne` | main room lights | group (living+kitchen) |
 | `light.bulb_e27_cws_globe_806lm_hruska` | living room light | RGB+W; alias: `hruska` |
@@ -140,13 +151,43 @@ document.querySelector('home-assistant').hass.states['entity.id'].state
 
 ## Automations
 
-| ID | Name | Trigger |
+| ID | Alias | Trigger |
 |---|---|---|
-| `1767439659694` | Media Time | PS4 activation |
-| `1774210332085` | Vibration sensor kitchen | Vibration 2s, PS4 off |
-| `pohybove_svetlo_chodba_casova_intenzita` | Hallway motion light | Motion in hallway |
-| `1760638473413` | Daily Smart Home Summary | 21:05 daily → notify `mobile_app_sm_a546b` |
-| — | Start the PC | manual / voice |
+| `1759085159743` | Notify when Phone Battery is Low (Fanda) | battery < 20 % |
+| `pohybove_svetlo_chodba_casova_intenzita` | Hallway motion light | Motion in hallway, day/night intensity |
+| `1759594437459` | Turn off Lights with Remote Button (GUESTS) | ZHA button 1 |
+| `1759653938353` | Turn off Lights on Departure | NFC odchod ⚠️ duplicate — disable |
+| `1759660818887` | Notify when Prusa MK4 finishes (old) | sensor.prusa_mk4 → finished ⚠️ superseded |
+| `1759769689469` | Arrival lights (Fanda) | device enters zone.home |
+| `1760463399375` | Studio Desk NFC — Start Work Session | NFC studio stul |
+| `1760636015542` | Welcome and Market Update on Arrival | person → home |
+| `1760638473413` | Daily Smart Home Summary | 21:05 daily |
+| `1760977920980` | Control Bedroom Lights with Remote Button | ZHA button 2 |
+| `1761582140338` | Turn on 3D Printer with Tag Scan | NFC tag |
+| `1762973628996` | Prusa finish — AI summary (old) | sensor.prusa_mk4 → finished ⚠️ superseded |
+| `1764498752529` | Lights on when PS4 turns off | PS4 off |
+| `1764499575822` | Arrival lights (Simonka) | device enters zone.home |
+| `1767439659694` | Media Time | PS4 on |
+| `1767440741561` | Turn off Lights on Departure 2 (with battery warn) | NFC odchod ✅ keep this one |
+| `1767441268976` | Battery Low (Simonka) | battery < 20 % |
+| `1767804978532` | Light Off for High Phone Battery (Fanda) | battery > 20 % |
+| `1771772142584` | AE Print — MK4S Finished (Smart v2) | sensor.prusa_mk4 → finished ✅ |
+| `1771787973375` | AE Print — MK4S Capture + Notify | sensor.prusa_mk4 start/finish |
+| `1774210332085` | Kitchen Light with Vibration (IKEA fix) | vibration 2s, PS4 off |
+| `tmp_write_config` | _tmp_write_config | ⚠️ dead — delete |
+
+---
+
+## Known Issues (pending cleanup)
+
+| Issue | Action |
+|---|---|
+| ~~`notify.mobile_app_samsung_galaxy_a54` in 3 automations~~ | ✅ Sjednoceno na `_a546b` (2026-05-07) |
+| ~~Automation `1759653938353` (old departure)~~ | ✅ Smazána (2026-05-08) |
+| ~~Automation `1759660818887` (old Prusa notify)~~ | ✅ Smazána (2026-05-08) |
+| ~~Automation `1762973628996` (Prusa AI old)~~ | ✅ Smazána (2026-05-08) |
+| ~~`tmp_write_config`~~ | ✅ Smazána (2026-05-07) |
+| ~~`input_text.ae_last_print_file`~~ | ✅ Vytvořen (2026-05-07) |
 
 ---
 
@@ -158,19 +199,82 @@ document.querySelector('home-assistant').hass.states['entity.id'].state
 
 ---
 
-## Tools & Access
+## IKEA Bulb Quirks
 
-| Tool | Use case |
-|---|---|
-| HA MCP Server (`192.168.0.42:8123/mcp_server/sse`) | Query state, control devices from Claude Code |
-| Claude in Chrome + `hass.callService()` | Direct service calls, fastest |
-| Studio Code Server terminal | Git, YAML editing, shell commands |
-| Samba share `\\192.168.0.42\config` (user: `fandaborec_NAS`) | Direct file access from Windows |
+- CWS bulbs: RGB + color temp. WS bulbs: color temp only (no RGB).
+- 3-step fix: `rgb_color [255,255,255]` → delay 0.7s → set `color_temp_kelvin` + `brightness`
+- Double turn-off: some automations send `light.turn_off` twice with 0.7s delay to ensure bulb responds
 
 ---
 
-## IKEA Bulb Quirks
+## Reload vs. Restart — Decision Matrix
 
-- CWS bulbs support RGB+color temp; WS bulbs = color temp only (no RGB)
-- Double turn-off fix: if bulb doesn't respond, power cycle
-- Mushroom cards: requires v5.1.1+ (older sends deprecated mired)
+**Reload stačí (rychlé, preferované):**
+- ✅ Automations → `POST /api/services/automation/reload`
+- ✅ Scripts → `POST /api/services/script/reload`
+- ✅ Scenes → `POST /api/services/scene/reload`
+- ✅ Template entities → `POST /api/services/template/reload`
+- ✅ Groups → `POST /api/services/group/reload`
+- ✅ Themes → `POST /api/services/frontend/reload_themes`
+
+**Vyžaduje restart (`homeassistant/restart`):**
+- ❌ Min/Max senzory a platform-based senzory
+- ❌ Nové integrace v `configuration.yaml`
+- ❌ Změny core konfigurace
+- ❌ MQTT sensor/binary_sensor platformy
+- ❌ `shell_command` sekce (!)
+
+---
+
+## Dashboard — Vytvoření nového (Lovelace)
+
+Nový dashboard vyžaduje **2 soubory** v `.storage/`:
+
+1. **Samotný dashboard** — zkopírovat z existujícího:
+   ```
+   \\192.168.0.42\config\.storage\lovelace.my_dash → lovelace.novy_dashboard
+   ```
+
+2. **Registrace** v `\\192.168.0.42\config\.storage\lovelace_dashboards` — přidat záznam:
+   ```json
+   {
+     "id": "novy_dashboard",
+     "show_in_sidebar": true,
+     "icon": "mdi:tablet-dashboard",
+     "title": "Název dashboardu",
+     "require_admin": false,
+     "mode": "storage",
+     "url_path": "novy-dashboard"
+   }
+   ```
+
+3. Po uložení obou souborů — **restart HA** (reload nestačí pro nový dashboard).
+
+---
+
+## Jinja2 — Časté vzory
+
+**Počet otevřených dveří/senzorů:**
+```jinja2
+{% set sensors = ['binary_sensor.front_door', 'binary_sensor.window_sensor'] %}
+{% set open = sensors | select('is_state', 'on') | list | length %}
+{{ open }} / {{ sensors | length }} otevřeno
+```
+
+**Barevné kódování dle hodnoty:**
+```jinja2
+{% set val = states('sensor.nejaky_sensor') | int %}
+{% if val <= 1 %}red
+{% elif val <= 3 %}amber
+{% elif val <= 7 %}yellow
+{% else %}green
+{% endif %}
+```
+
+**Podmíněný seznam (append pattern):**
+```jinja2
+{% set items = [] %}
+{% if condition_a %}{% set items = items + ['Položka A'] %}{% endif %}
+{% if condition_b %}{% set items = items + ['Položka B'] %}{% endif %}
+{% if items %}{{ items | join(', ') }}{% else %}Žádné položky{% endif %}
+```
