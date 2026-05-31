@@ -1,4 +1,6 @@
 secrets.yaml
+.git-credentials
+automations.yaml.bak
 .storage/
 home-assistant.log*
 *.log

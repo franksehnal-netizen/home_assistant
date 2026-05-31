@@ -233,3 +233,8 @@ shell_command:
   # execline (HAOS shell_command engine) nepodporuje && chain — proto bash -c wrapper
   git_commit_push: >-
     bash -c "cd /config && git add -A && git commit -m '{{ message }}' && git push origin main 2>&1"
+  # Diagnostic helpers
+  git_diagnose: >-
+    bash -c "cd /config && git remote -v && echo ===HELPER=== && git config --get credential.helper && echo ===CREDS=== && ls -la /root/.git-credentials /config/.git-credentials 2>&1 && echo ===GITCONFIG=== && cat /root/.gitconfig 2>&1"
+  git_set_credentials: >-
+    bash -c "cd /config && git config credential.helper 'store --file=/config/.git-credentials' && chmod 600 /config/.git-credentials && echo CONFIGURED && git config --get credential.helper"
