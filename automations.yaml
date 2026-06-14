@@ -820,26 +820,10 @@
           sequence:
           - action: rest_command.ae_log_production
   mode: restart
-- id: '1774210332088'
-  alias: Kitchen Vibration Sensor - Nightly Reconfigure
-  description: Preventivni rekonfigurace ZHA senzoru kazdy noc - zamezi zombie stavu
-  triggers:
-  - trigger: time
-    at: '03:00:00'
-  conditions:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: binary_sensor.vibration_sensor_kitchen
-      state: unavailable
-  actions:
-  - action: zha.reconfigure_device
-    data:
-      ieee: 'a4:c1:38:4f:90:46:ec:37'
-  mode: single
 - id: '1774210332087'
   alias: Kitchen Vibration Sensor - Reconfigure on Recovery
-  description: Po Zigbee vypadku automaticky rekonfiguruje senzor hned po reconnectu
+  description: Po Zigbee vypadku notifikuje o reconnectu senzoru (zha.reconfigure_device
+    odstranen v HA 2024.10+)
   triggers:
   - trigger: state
     entity_id: binary_sensor.vibration_sensor_kitchen
@@ -850,9 +834,10 @@
       seconds: 15
   conditions: []
   actions:
-  - action: zha.reconfigure_device
+  - action: notify.notify
     data:
-      ieee: 'a4:c1:38:4f:90:46:ec:37'
+      title: Kuchynsky sensor online
+      message: Vibracni sensor v kuchyni se reconnectoval (byl unavailable).
   mode: single
 - id: '1774210332086'
   alias: Kitchen Vibration Sensor Unavailable Alert
@@ -979,4 +964,16 @@
   - action: homeassistant.reload_config_entry
     target:
       entity_id: sensor.prusa_mk4
+  mode: single
+
+- id: ae_dashboard_refresh_on_start
+  alias: AE Dashboard - refresh on HA start
+  description: Po startu HA zavola n8n webhook, ktery znovu naplni sensor.ae_* (push stavy se restartem mazou).
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - delay: 00:00:30
+  - action: rest_command.ae_dashboard_refresh
   mode: single

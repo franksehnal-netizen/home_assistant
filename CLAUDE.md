@@ -23,7 +23,7 @@ Instructions for Claude Code when working with this repository.
 |---|---|
 | Local address | `192.168.0.42:8123` |
 | Tailscale IP | `100.69.125.67` |
-| HA version | HAOS 2026.4.x |
+| HA version | HAOS 2026.5.0 |
 | Studio Code Server | `http://192.168.0.42:8123/a0d7b954_vscode` (open from HA sidebar only) |
 | Samba share | `\\192.168.0.42\config` user: `fandaborec_NAS` |
 
@@ -178,6 +178,18 @@ Committed:
 
 ---
 
+## ZHA — Removed Services
+
+`zha.reconfigure_device` byl odstraněn v HA 2024.10+. Žádná přímá náhrada neexistuje.
+
+Dostupné ZHA služby (2026-06): `permit`, `remove`, `set_zigbee_cluster_attribute`, `issue_zigbee_cluster_command`, `issue_zigbee_group_command`, `warning_device_squawk`, `warning_device_warn`, lock-related services.
+
+**ZHA config_entry_id** (Sonoff Zigbee 3.0 USB Dongle Plus V2): `01K5W85DD9P58XRMKZE9DBASXK`
+
+Pokud je potřeba reload celého ZHA: `homeassistant.reload_config_entry` s tímto ID (pozor — odpojí všechna Zigbee zařízení na chvíli).
+
+---
+
 ## Known Issues (pending cleanup)
 
 | Issue | Action |
@@ -188,6 +200,8 @@ Committed:
 | ~~Automation `1762973628996` (Prusa AI old)~~ | ✅ Smazána (2026-05-08) |
 | ~~`tmp_write_config`~~ | ✅ Smazána (2026-05-07) |
 | ~~`input_text.ae_last_print_file`~~ | ✅ Vytvořen (2026-05-07) |
+| ~~`1774210332088` Nightly Reconfigure — zha.reconfigure_device removed~~ | ✅ Smazána (2026-06-02) |
+| ~~`1774210332087` Reconfigure on Recovery — zha.reconfigure_device removed~~ | ✅ Nahrazena notify akcí (2026-06-02) |
 
 ---
 

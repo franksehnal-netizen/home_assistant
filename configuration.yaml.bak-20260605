@@ -3,16 +3,6 @@
 frontend:
   themes: !include_dir_merge_named themes
 
-lovelace:
-  mode: storage
-  dashboards:
-    ae-dashboard:
-      mode: yaml
-      title: Acoustic Empire
-      icon: mdi:crown
-      show_in_sidebar: true
-      filename: ae-dashboard.yaml
-
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
@@ -143,11 +133,6 @@ template:
         unique_id: desktop_pc_is_active
         device_class: running
         state: "{{ states('sensor.smart_plug_desktop_pc_vykon') | float(0) >= 20 }}"
-  - binary_sensor:
-      - name: Prusa MK4S Online
-        unique_id: prusa_mk4s_online
-        device_class: connectivity
-        state: "{{ states('sensor.prusa_mk4') not in ['unavailable', 'unknown'] }}"
   - trigger:
       - platform: time
         at: "00:00:00"
@@ -203,10 +188,6 @@ template:
           {% endif %}
 
 rest_command:
-  ae_dashboard_refresh:
-    url: "http://192.168.0.113:5678/webhook/ae-dashboard-refresh"
-    method: GET
-    timeout: 30
   discord_print_embed:
     url: !secret discord_webhook_prints
     method: POST
