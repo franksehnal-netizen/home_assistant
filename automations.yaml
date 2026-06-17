@@ -977,3 +977,15 @@
   - delay: 00:00:30
   - action: rest_command.ae_dashboard_refresh
   mode: single
+- id: cognitive_light_off_22
+  alias: Cognitive light - Auto Off at 22:00
+  description: Kazdy den ve 22:00 vypne kognitivni svetlo (smart plug).
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    target:
+      entity_id: switch.smart_plug_cognitive_light
+  mode: single
