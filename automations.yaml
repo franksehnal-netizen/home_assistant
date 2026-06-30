@@ -1,4 +1,4 @@
-﻿- id: '1759085159743'
+- id: '1759085159743'
   alias: Notify when Phone Battery is Low
   description: Sends a notification to your mobile phone when its battery level falls
     below 36%.
@@ -146,14 +146,10 @@
       target:
         entity_id: light.bulb_e27_cws_globe_806lm_hruska
     - action: switch.turn_off
-
       target:
-
         entity_id: switch.smart_plug_cognitive_light
     - action: switch.turn_off
-
       target:
-
         entity_id: switch.ikea_of_sweden_inspelning_smart_plug
     - if:
       - condition: state
@@ -162,9 +158,7 @@
       then: []
       else:
       - action: switch.turn_off
-
         target:
-
           entity_id: switch.smart_plug_prusa_mk4s
     - action: media_player.volume_set
       metadata: {}
@@ -233,7 +227,6 @@
   triggers:
   - trigger: state
     entity_id: person.fanda_simonka_home
-    from: not_home
     to: home
   conditions: []
   actions:
@@ -265,9 +258,7 @@
       seconds: 5
       milliseconds: 0
   - action: switch.turn_on
-
     target:
-
       entity_id: switch.smart_plug_cognitive_light
   mode: single
 - id: '1760463399375'
@@ -291,9 +282,7 @@
     target:
       entity_id: media_player.home_assistant_voice_0a36ed_media_player
   - action: switch.turn_on
-
     target:
-
       entity_id: switch.ikea_of_sweden_inspelning_smart_plug
   - action: button.press
     metadata: {}
@@ -437,9 +426,7 @@
       target:
         device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
     - action: light.turn_off
-
       target:
-
         entity_id: light.bulb_red_bedroom
     else:
     - action: light.turn_on
@@ -454,9 +441,7 @@
       target:
         device_id: 0f6c635a19ef00fc1b365fe0b4cce94d
     - action: light.turn_on
-
       target:
-
         entity_id: light.bulb_red_bedroom
   mode: single
 - id: '1761582140338'
@@ -480,16 +465,16 @@
     entity_id: media_player.playstation_4
     from: playing
     to:
-      - standby
-      - idle
-      - 'off'
+    - standby
+    - idle
+    - 'off'
     for:
       hours: 0
       minutes: 0
       seconds: 5
   conditions:
   - condition: time
-    after: '07:00:00'
+    after: 07:00:00
     before: '23:00:00'
   actions:
   - action: remote.send_command
@@ -528,7 +513,6 @@
   triggers:
   - trigger: state
     entity_id: person.simonka
-    from: not_home
     to: home
   conditions: []
   actions:
@@ -573,9 +557,7 @@
       device: TV Samsung
       command: power
   - action: switch.turn_off
-
     target:
-
       entity_id: switch.smart_plug_cognitive_light
   - action: light.turn_on
     target:
@@ -647,14 +629,10 @@
       - light.led_strip_bedroom
       - light.bulb_red_bedroom
   - action: switch.turn_off
-
     target:
-
       entity_id: switch.smart_plug_cognitive_light
   - action: switch.turn_off
-
     target:
-
       entity_id: switch.ikea_of_sweden_inspelning_smart_plug
   - action: media_player.media_pause
     metadata: {}
@@ -855,7 +833,8 @@
   - action: notify.notify
     data:
       title: Kuchynsky sensor offline
-      message: "Vibracni sensor v kuchyni je unavailable (Zigbee vypadek). Svetla nebudou reagovat na pohyb. Zkontroluj ZHA nebo restartuj senzor."
+      message: Vibracni sensor v kuchyni je unavailable (Zigbee vypadek). Svetla nebudou
+        reagovat na pohyb. Zkontroluj ZHA nebo restartuj senzor.
   mode: single
 - id: '1774210332085'
   alias: Turn on Kitchen Light with Vibration (IKEA fix)
@@ -923,12 +902,13 @@
   mode: restart
 - id: studio_auto_off_idle
   alias: Studio - Auto Off after 90 min idle
-  description: Vypne studio smart plug po 90 min nečinnosti (jen večer). Posle warning notif 5 min predem.
+  description: Vypne studio smart plug po 90 min nečinnosti (jen večer). Posle warning
+    notif 5 min predem.
   triggers:
   - trigger: state
     entity_id: binary_sensor.studio_is_active
     to: 'off'
-    for: '01:30:00'
+    for: 01:30:00
   conditions:
   - condition: time
     after: '18:00:00'
@@ -940,7 +920,7 @@
     data:
       title: Studio - vypinam za 5 min
       message: 90 min bez aktivity. Pro zruseni zapni neco ve studiu.
-  - delay: '00:05:00'
+  - delay: 00:05:00
   - condition: state
     entity_id: binary_sensor.studio_is_active
     state: 'off'
@@ -955,7 +935,7 @@
   - trigger: numeric_state
     entity_id: sensor.smart_plug_prusa_mk4s_vykon
     above: 5
-    for: '00:00:30'
+    for: 00:00:30
   conditions:
   - condition: state
     entity_id: sensor.prusa_mk4
@@ -965,10 +945,10 @@
     target:
       entity_id: sensor.prusa_mk4
   mode: single
-
 - id: ae_dashboard_refresh_on_start
   alias: AE Dashboard - refresh on HA start
-  description: Po startu HA zavola n8n webhook, ktery znovu naplni sensor.ae_* (push stavy se restartem mazou).
+  description: Po startu HA zavola n8n webhook, ktery znovu naplni sensor.ae_* (push
+    stavy se restartem mazou).
   triggers:
   - trigger: homeassistant
     event: start
